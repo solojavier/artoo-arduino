@@ -5,7 +5,7 @@ require 'artoo'
 #connection :firmata, :adaptor => :firmata, :port => '/dev/tty*'
 connection :firmata, :adaptor => :firmata, :port => '127.0.0.1:8023'
 # Analog inputs are based from 0 to 5 on the Arduino UNO, may vary on other arduino boards
-device :sensor, driver: :analog, pin: 0, interval: 0.25, upper: 900, lower: 200
+device :sensor, driver: :analog_sensor, pin: 0, interval: 0.25, upper: 900, lower: 200
 device :led, :driver => :led, :pin => 8
 
 work do

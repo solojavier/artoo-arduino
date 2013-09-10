@@ -3,7 +3,7 @@ require 'artoo/drivers/driver'
 module Artoo
   module Drivers
     # AnalogSensors driver behaviors
-    class Analog < Driver
+    class AnalogSensor < Driver
       COMMANDS = [:analog_read, :lower, :upper, :previous_read].freeze
 
       attr_reader :lower, :upper, :previous_read
