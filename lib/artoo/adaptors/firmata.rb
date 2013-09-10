@@ -11,7 +11,7 @@ module Artoo
       # @return [Boolean]
       def connect
         require 'firmata' unless defined?(::Firmata::Board)
-        
+
         @firmata = ::Firmata::Board.new(connect_to)
         @firmata.connect
         super
@@ -53,20 +53,31 @@ module Artoo
       end
 
       def analog_read(pin)
-        firmata.set_pin_mode(pin, ::Firmata::PinModes::ANALOG)
-        firmata.toggle_pin_reporting(pin)
+        firmata.set_pin_mode(to_firmata_analog_pin(pin), ::Firmata::PinModes::ANALOG)
+        firmata.toggle_pin_reporting(to_firmata_analog_pin(pin))
         firmata.read_and_process
 
         value = 0
-        while i = find_event("analog_read_#{to_analog_pin(pin)}") do
+        while i = find_event("analog_read_#{ pin }") do
           event = events.slice!(i)
           value = event.data.first if !event.nil?
         end
         value
       end
 
+      # Uses method missing to call Firmata Board methods
+      # @see http://rubydoc.info/gems/hybridgroup-firmata/0.3.0/Firmata/Board Firmata Board Documentation
+      def method_missing(method_name, *arguments, &block)
+        firmata.send(method_name, *arguments, &block)
+      end
+
+    private
       def to_analog_pin(pin)
         pin - 14
+      end
+
+      def to_firmata_analog_pin(pin)
+        pin + 14
       end
 
       def find_event(name)
@@ -75,12 +86,6 @@ module Artoo
 
       def events
         firmata.async_events
-      end
-
-      # Uses method missing to call Firmata Board methods
-      # @see http://rubydoc.info/gems/hybridgroup-firmata/0.3.0/Firmata/Board Firmata Board Documentation
-      def method_missing(method_name, *arguments, &block)
-        firmata.send(method_name, *arguments, &block)
       end
 
     protected
